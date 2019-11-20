@@ -4,8 +4,8 @@ var databaseConnect = require('./databaseConnect')
 
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-    console.log(req.headers.cookie.user)
+router.get('/dashboard', function(req, res, next) {
+    console.log(req.headers.cookie.split('userAuth=',-1)[1])
   res.render('index', { title: 'Express' });
 });
 
@@ -14,7 +14,7 @@ router.get('/manage', function(req, res, next) {
 
 });
 router.get('/login', function(req, res, next) {
-    res.render('candidate', { title: '' });
+    res.render('login', { title: '' });
 
 });
 router.get('/register', function(req, res, next) {
@@ -36,8 +36,16 @@ router.post('/register',function (req,res,next) {
 router.post('/login',function (req,res,next) {
     var password = req.body.password
     var email = req.body.email
-    databaseConnect.lo(email,password,function (msg) {
-        res.send(msg)
+    databaseConnect.loginUser(email,password,function (msg) {
+
+        if(msg.success===true){
+            res.cookie('userAuth',msg.token, { maxAge: 14400000, httpOnly: true })
+            res.redirect('/dashboard')
+        }else{
+            console.log(msg)
+            res.send(msg)
+        }
+
     })
 
 

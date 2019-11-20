@@ -220,5 +220,6 @@ function reg_user(username, password, callback) {
 
 module.exports={
     sendMail:sendMail,
-    registerUser:registerUser
+    registerUser:registerUser,
+    loginUser:loginUser
 }
