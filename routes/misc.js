@@ -1,4 +1,4 @@
-
+var databaseConnect = require('./databaseConnect')
 function genElectionId(email, callback){
     genRandToken(Math.floor(Math.random() * 10)+7, function (token) {
         var election_id = email+"_"+token;
@@ -11,6 +11,28 @@ function genKeys(username, positionName, type, num_of_pos, election_name,number_
     if(type===1){
 
     }else if(type===2){
+
+    }
+}
+
+function validate(token, callback){
+
+
+
+    if(token===undefined){
+        return callback({success:false})
+    }else {
+        //    check validity
+
+        databaseConnect.checkTokenValidity(token,function (msg) {
+            if (msg.success===true){
+                return callback({success: true,data:msg.data})
+            } else{
+                return callback({success:false})
+            }
+        })
+
+        // res.send(req.signedCookies.userAuth)
 
     }
 }

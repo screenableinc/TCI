@@ -109,6 +109,7 @@ var html_temp="<head>\n" +
     "</body>"
 function targetExistsCheck(targetParam, targetValue,targetTable, callback) {
     var sql = "SELECT * FROM "+targetTable+" WHERE "+ targetParam+" = '"+targetValue+"'";
+    console.log(sql)
     connection.query(sql,function (err, result) {
         if (err){
             return callback({success:false,data:err.errno,from:sql})
@@ -116,8 +117,17 @@ function targetExistsCheck(targetParam, targetValue,targetTable, callback) {
             if (result.length===0){
                 return callback({success: false,data:"doesn't exist"})
             }else {
-                return callback({success: true})
+                return callback({success: true,data:result})
             }
+        }
+    })
+}
+function checkTokenValidity(token, callback){
+    targetExistsCheck('sessionID',token,'users',function (res) {
+        if(res.success===true){
+            return callback(res)
+        }else {
+            return callback(res)
         }
     })
 }
@@ -221,5 +231,6 @@ function reg_user(username, password, callback) {
 module.exports={
     sendMail:sendMail,
     registerUser:registerUser,
-    loginUser:loginUser
+    loginUser:loginUser,
+    checkTokenValidity:checkTokenValidity
 }

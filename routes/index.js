@@ -5,8 +5,30 @@ var databaseConnect = require('./databaseConnect')
 
 /* GET home page. */
 router.get('/dashboard', function(req, res, next) {
-    console.log(req.headers.cookie.split('userAuth=',-1)[1])
-  res.render('index', { title: 'Express' });
+    var token=req.signedCookies.userAuth
+    if(token===undefined){
+        res.redirect('/login')
+    }else {
+    //    check validity
+
+        databaseConnect.checkTokenValidity(token.token,function (msg) {
+            if (msg.success===true){
+                var f_name = msg.data[0]['firstname']
+                var l_name = msg.data[0]['lastname']
+                var greeting  = "HI! "+ f_name;
+                res.render('index',{greeting: greeting})
+            } else{
+                res.redirect('/login')
+            }
+        })
+
+        // res.send(req.signedCookies.userAuth)
+
+    }
+
+
+    // console.log(req.headers.cookie.split('userAuth=',-1)[1])
+  // res.render('index', { title: 'Express' });
 });
 
 router.get('/manage', function(req, res, next) {
@@ -39,7 +61,7 @@ router.post('/login',function (req,res,next) {
     databaseConnect.loginUser(email,password,function (msg) {
 
         if(msg.success===true){
-            res.cookie('userAuth',msg.token, { maxAge: 14400000, httpOnly: true })
+            res.cookie('userAuth',{token:msg.token,email:email}, { maxAge: 14400000, httpOnly: true ,signed:true})
             res.redirect('/dashboard')
         }else{
             console.log(msg)
@@ -53,6 +75,34 @@ router.post('/login',function (req,res,next) {
 })
 router.get('/election', function(req, res, next) {
   res.render('election', { title: '' });
+
+});
+router.post('/election/create', function(req, res, next) {
+
+    var election_name = req.body.election_name;
+
+    var token=req.signedCookies.userAuth
+    if(token===undefined){
+        res.redirect('/login')
+    }else {
+        //    check validity
+
+        databaseConnect.checkTokenValidity(token.token,function (msg) {
+            if (msg.success===true){
+                var f_name = msg.data[0]['firstname']
+                var l_name = msg.data[0]['lastname']
+                var greeting  = "HI! "+ f_name;
+                res.render('index',{greeting: greeting})
+            } else{
+                res.redirect('/login')
+            }
+        })
+
+        // res.send(req.signedCookies.userAuth)
+
+    }
+
+    res.send("");
 
 });
 router.get('/live', function(req, res, next) {
