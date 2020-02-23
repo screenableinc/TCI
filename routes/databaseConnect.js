@@ -1,6 +1,10 @@
 var mysql = require("mysql");
 var nodemailer = require('nodemailer')
 var misc = require('./misc');
+var g = misc.genElectionId("wiseemsads",function (c) {
+    return g
+})
+
 
 var connection = mysql.createConnection({
     host     : 'localhost',
@@ -131,6 +135,62 @@ function checkTokenValidity(token, callback){
         }
     })
 }
+function getElections(ownerID,callback) {
+    var sql = "SELECT * from elections WHERE ownerID = '"+ownerID+"'";
+    connection.query(sql, function (err, result) {
+        if(err){
+            return callback({success:false,response:err})
+        }else{
+            return callback({success:true,response:result})
+        }
+    })
+}
+function getPositons(electionId,callback) {
+    var sql = "SELECT * FROM positions WHERE electionID = '"+electionId+"'"
+    connection.query(sql, function (err, result) {
+        if(err){
+            return callback({success:false,response:err})
+
+        }else {
+            return callback({success:true,response:result})
+        }
+    })
+}
+function getElection(ownerID,electionID,callback){
+    var sql =  "SELECT * FROM elections WHERE electionID='"+electionID+"' AND ownerID = '"+ownerID+"'";
+
+    connection.query(sql, function (err, result) {
+        if(err){
+            return callback({success:false,response:err})
+        }else{
+            return callback({success:true,response:result})
+        }
+    })
+}
+function createElection(ownerID,name,description,callback) {
+    var sql = "INSERT INTO elections (electionID, name, description,ownerID) VALUES (?)"
+    misc.genElectionId(ownerID,function (id) {
+        connection.query(sql,[[id,name,description,ownerID]],function (err,result) {
+            if (err){
+
+                return callback({success:false,response:err});
+            }else {
+                return callback({success:true,response:result,electionId:id});
+            }
+        })
+    })
+
+}
+function getCandidates(electionID,callback) {
+    var sql = "SELECT * FROM candidates WHERE electionID='"+"'";
+    connection.query(sql, function (err,result) {
+        if(err){
+            return callback ({success:false,response:err})
+        }else {
+            return callback({success:true,response:result})
+        }
+    })
+}
 
 function registerUser(email, password, f_name, l_name,callback) {
     targetExistsCheck('email', email, 'users',function (res){
@@ -169,6 +229,7 @@ function loginUser(email, password,callback){
                 if(res.success===false){
                 //    password false
                 //     return password failed
+                    return callback({success:false})
                 }else {
                     // create cookie and redirect
 
@@ -197,6 +258,28 @@ function sqlInsert(sql, callback) {
         }
     })
 
+}
+function addCandidate(electionID,candidateID,accessToken,positionName,callback) {
+    var sql = "INSERT INTO candidates (candidateID,electionID,accessToken,positionName) VALUES (?)"
+    connection.query(sql,[[candidateID,electionID],accessToken,positionName],function (err,result) {
+        if(err){
+            return callback({success:false,response:err})
+        }else {
+            return callback({success:true, response:result})
+        }
+    })
+}
+function addPosition(electionID,positionName,callback) {
+    var sql = "INSERT INTO positions (electionID, positionName) VALUES (?)"
+    connection.query(sql,[[electionID,positionName]],function (err,result) {
+        if(err){
+            console.log(err)
+            return callback({success:false,response:err})
+        }else {
+            console.log(result)
+            return callback({success:true, response:result})
+        }
+    })
 }
 function sendMail(email,token, fullname, callback) {
     var transporter = nodemailer.createTransport({
@@ -232,5 +315,12 @@ module.exports={
     sendMail:sendMail,
     registerUser:registerUser,
     loginUser:loginUser,
-    checkTokenValidity:checkTokenValidity
+    checkTokenValidity:checkTokenValidity,
+    createElection:createElection,
+    getElections:getElections,
+    getElection:getElection,
+    getPositons:getPositons,
+    getCandidates:getCandidates,
+    addCandidate:addCandidate,
+    addPosition:addPosition
 }

@@ -1503,6 +1503,7 @@ var Slim = (function () {
             input.readOnly = true;
         }
         input.type = 'search';
+        input.id='slimselectinput'
         input.placeholder = this.main.config.searchPlaceholder;
         input.tabIndex = 0;
         input.setAttribute('aria-label', this.main.config.searchPlaceholder);
