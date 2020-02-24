@@ -3085,7 +3085,7 @@ h6 {
 
   background: deepskyblue;
 }
-.image_frame:hover{
+#image_container:hover{
   cursor: pointer;
 }
 .image_frame img{

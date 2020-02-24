@@ -37,7 +37,7 @@ router.get('/manage', function(req, res, next) {
 
 });
 router.get('/login', function(req, res, next) {
-    res.render('login', { title: '' });
+    res.render('login2', { title: '' });
 
 });
 router.get('/register', function(req, res, next) {
@@ -81,16 +81,19 @@ router.post('/candidate/add',function (req,res,next) {
     var candidateId = req.body.candidateId;
     var fullname = req.body.fullname
     var position = req.body.position
+
     if (token===undefined){
         res.redirect('/login')
     }else {
-        databaseConnect.addCandidate(electionId,candidateId,accessToken,position,function (msg) {
+        databaseConnect.addCandidate(electionId,candidateId,accessToken,position,fullname,function (msg) {
+            console.log(msg)
             res.send(JSON.stringify(msg))
         })
     }
 })
 router.get('/candidates', function (req, res, next) {
-    var electionId = req.body.electionId;
+    var electionId = req.query.electionId;
+    console.log(electionId)
     databaseConnect.getCandidates(electionId,function (msg) {
         res.send(JSON.stringify(msg))
     })
@@ -127,7 +130,7 @@ router.get('/positions',function (req, res, next) {
 
 router.get('/elections/manage', function(req, res, next) {
     var token = req.signedCookies.userAuth
-    var electionId = "wisesibindi@gmail.com_Kl8081f9oGW"
+    var electionId = req.query.electionId
     if (token===undefined){
         res.redirect('/login')
     }else {
@@ -159,6 +162,21 @@ router.get('/elections/all', function (req, res, n) {
                     res.send(response)
                 })
             }
+        })
+    }
+})
+router.post('/elections/manage/emailToken',function (req,res,next) {
+    var token=req.signedCookies.userAuth;
+    var electionName = req.body.electionName;
+    var candidateId = req.body.candidateId;
+    var position = req.body.position;
+    var candidateName = req.body.candidateName;
+    var accessToken = req.body.accessToken;
+    if(token===undefined){
+        res.redirect('/login')
+    }else{
+        databaseConnect.emailCandidate(candidateId,accessToken,candidateName,position,electionName,function (msg) {
+            res.send(msg)
         })
     }
 })
@@ -197,7 +215,9 @@ router.post('/elections/create', function(req, res, next) {
 
 });
 router.get('/live', function(req, res, next) {
-    res.render('live', { lg: '3', candidate_name:'uihkhjkh',position:'President' });
+    var emailT = require('./emailTemplates')
+    res.send(emailT.candidateJoinEmail)
+    // res.render('live', { lg: '3', candidate_name:'uihkhjkh',position:'President' });
 
 });
 router.get('/verification', function(req, res, next) {

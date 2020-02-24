@@ -1,6 +1,8 @@
 $(document).ready(function () {
     var arrayPositions=[];
+    var arrayCandidates=[];
     var electionId = $("#electionId").text();
+    var electionName=$("#electionName").text();
 
     function genRandToken(range) {
         var text = "";
@@ -11,9 +13,47 @@ $(document).ready(function () {
 
         return text;
     }
-    function addToCandidatesTable(candidateName, candidateId, position, accessToken){
+    function emailCandidate(candidateId,accessToken) {
 
     }
+    function addToCandidatesTable(candidateName, candidateId, position, accessToken){
+        var row = $("<tr></tr>");
+        console.log(candidateName)
+        var candName = $("<td>"+candidateName+"</td>");
+        var candId = $("<td>"+candidateId+"</td>");
+        var candPosition = $("<td>"+position+"</td>");
+        var candAccessToken = $("<td>"+accessToken+"</td>");
+        var candActions = $("<td></td>");
+        var actionEmail = $("<span><i class=\"material-icons email\">email</i></span>");
+        var actionDelete = $("<span><i class=\"material-icons cancel\">cancel</i></span>");
+        actionDelete.on("click",function(){
+        //    open are you sure dialog
+        });
+        actionEmail.on("click",function () {
+        //    send email to id
+            $.ajax({
+                type:"POST",
+                url:"/elections/manage/emailToken",
+                data:{electionName:electionName, candidateId:candidateId, candidateName:candidateName,accessToken:accessToken},
+                success:function(msg){
+                    console.log(msg)
+                }
+            })
+        })
+        candActions.append(actionEmail);candActions.append(actionDelete)
+
+
+        $([candId,candName,candPosition,candAccessToken,candActions]).each(function (e) {
+            console.log(this)
+
+            row.append(this)
+        })
+        $("#tbodycandidates").append(row)
+
+
+
+    }
+
     function addToPositionTable(positionName) {
         var action_cons = "<i class=\"material-icons delete\">delete_forever</i>"
         var row ="<tr > <th scope=\"row\">"+positionName+"</th> <td>--actions--</td> </tr>"
@@ -23,6 +63,25 @@ $(document).ready(function () {
         $("tbody#positionTable").append(row)
     }
 
+    function loadCandidates() {
+        $.ajax({
+            url:"/candidates?electionId="+electionId,
+            type:"GET",
+
+            success:function (msg){
+                msg=JSON.parse(msg)
+                console.log(msg)
+                if(msg.success){
+                    for (var i = 0; i < msg.response.length; i++) {
+                        var candInfo=msg.response[i]
+                        addToCandidatesTable(candInfo.fullname,candInfo.candidateID,candInfo.positionName,candInfo.accessToken);
+
+                    }
+                }
+            }
+        })
+    }
+
     function loadPositions(){
         $.ajax({
             type:"GET",
@@ -30,7 +89,7 @@ $(document).ready(function () {
             success:function (msg) {
                 // msg=JSON.parse(msg)
                 if(msg.success){
-                    console.log(msg.response.length)
+
                     for (var i = 0; i < msg.response.length; i++) {
 
                         var posName = msg.response[i].positionName;
@@ -44,7 +103,7 @@ $(document).ready(function () {
         })
     }
 
-    console.log(electionId)
+
     function loadElection(){
 
     }
@@ -110,17 +169,19 @@ $(document).ready(function () {
     })
     $("#buttonAddCandidate").on('click',function (e) {
         $("input#electionId").val(electionId)
-        var name = $("input#name").val();
+        var name = $("input#fullname").val();
         var position = $("input#positionName").val();
         var candidateId = $("input#candidateId").val();
         var accessToken = genRandToken(12)
-        var position  =$("select#positions").selected();
+        var position  =$("select#positions").find(":selected").text();
         if(name!=="" && candidateId!=="" && candidateId.includes("@") && position!=="select"){
             $.ajax({
+                type:"POST",
                 url:"/candidate/add",
                 data:{electionId:electionId,accessToken:accessToken,candidateId:candidateId,fullname:name,position:position},
                 success:function(msg){
                 //    add user to table on success
+                    console.log(msg)
                 }
             })
         }
@@ -132,6 +193,7 @@ $(document).ready(function () {
 
 
 
-    loadPositions()
+    loadPositions();
+    loadCandidates();
 
 })

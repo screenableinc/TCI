@@ -1,6 +1,7 @@
 var mysql = require("mysql");
 var nodemailer = require('nodemailer')
 var misc = require('./misc');
+var email_temp = require("./emailTemplates")
 var g = misc.genElectionId("wiseemsads",function (c) {
     return g
 })
@@ -156,6 +157,14 @@ function getPositons(electionId,callback) {
         }
     })
 }
+
+function emailCandidate(candidateId,accessToken,name,position,electtionName,callback) {
+    var html = email_temp.candidateJoinEmail.replace("$$name",name).replace("$$electionName",electtionName)
+        .replace("$$position",position).replace("$$accessToken",accessToken)
+    sendMail(candidateId,html,function (msg) {
+        return callback(msg)
+    })
+}
 function getElection(ownerID,electionID,callback){
     var sql =  "SELECT * FROM elections WHERE electionID='"+electionID+"' AND ownerID = '"+ownerID+"'";
 
@@ -182,7 +191,7 @@ function createElection(ownerID,name,description,callback) {
 
 }
 function getCandidates(electionID,callback) {
-    var sql = "SELECT * FROM candidates WHERE electionID='"+"'";
+    var sql = "SELECT * FROM candidates WHERE electionID='"+electionID+"'";
     connection.query(sql, function (err,result) {
         if(err){
             return callback ({success:false,response:err})
@@ -202,7 +211,9 @@ function registerUser(email, password, f_name, l_name,callback) {
                     if(err){
                         return callback({success:false,msg:err})
                     } else {
-                        sendMail(email, token,fullname,function (res) {
+                        var html = html_temp.replace("$$$",token).replace("$$name", fullname)// plain text body
+
+                        sendMail(email,html,function (res) {
                             if(res.success){
                                 return callback({success:true})
                             }else {
@@ -259,9 +270,9 @@ function sqlInsert(sql, callback) {
     })
 
 }
-function addCandidate(electionID,candidateID,accessToken,positionName,callback) {
-    var sql = "INSERT INTO candidates (candidateID,electionID,accessToken,positionName) VALUES (?)"
-    connection.query(sql,[[candidateID,electionID],accessToken,positionName],function (err,result) {
+function addCandidate(electionID,candidateID,accessToken,positionName,fullName,callback) {
+    var sql = "INSERT INTO candidates (candidateID,electionID,accessToken,positionName,fullname) VALUES (?)"
+    connection.query(sql,[[candidateID,electionID,accessToken,positionName,fullName]],function (err,result) {
         if(err){
             return callback({success:false,response:err})
         }else {
@@ -281,7 +292,7 @@ function addPosition(electionID,positionName,callback) {
         }
     })
 }
-function sendMail(email,token, fullname, callback) {
+function sendMail(email,html, callback) {
     var transporter = nodemailer.createTransport({
         host: 'premium76.web-hosting.com',
         port: 465,
@@ -296,8 +307,7 @@ function sendMail(email,token, fullname, callback) {
         from: 'accounts@screenableinc.com', // sender address
         to: email, // list of receivers
         subject: 'Verification Code', // Subject line
-        html: html_temp.replace("$$$",token).replace("$$name", fullname)// plain text body
-    };
+        html: html};
 
     transporter.sendMail(mailOptions, function (err, info) {
         if(err){
@@ -322,5 +332,6 @@ module.exports={
     getPositons:getPositons,
     getCandidates:getCandidates,
     addCandidate:addCandidate,
-    addPosition:addPosition
+    addPosition:addPosition,
+    emailCandidate:emailCandidate
 }

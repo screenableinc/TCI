@@ -37,6 +37,7 @@
 
 <body class="">
 <div id="electionId" style="display: none">{{electionId}}</div>
+<div id="electionName" style="display: none">{{electionName}}</div>
 <div class="wrapper ">
 
     <div class="content">
@@ -167,7 +168,7 @@
                                         <th scope="col"><button data-target="#addCandidate" data-toggle="modal" id="candidateToggle" class="btn btn-primary"> Add </button></th>
                                     </tr>
                                     </thead>
-                                    <tbody class="candidates">
+                                    <tbody id="tbodycandidates">
                                     <tr></tr>
                                     </tbody>
                                 </table>
@@ -216,7 +217,7 @@
                     <div class="col-md-5">
                         <div class="form-group">
                             <label class="bmd-label-floating">Name</label>
-                            <input placeholder="Name" type="text" class="form-control" name="fullname">
+                            <input placeholder="Name" type="text" class="form-control" id="fullname">
                         </div>
                     </div>
 

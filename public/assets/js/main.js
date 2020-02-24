@@ -46,22 +46,33 @@ $(document).ready(function () {
     }
 
     function appendRow(electionId,electionName,description) {
-        var markup = "<tr id='--electionId--' > <th scope=\"row\">--electionId--</th> <td>--electionName--</td> <td>--description--</td> <td>--actions--</td> </tr>"
-        var action_cons = "<i class=\"material-icons delete\">settings</i>\n" +
-            "                        <i class=\"material-icons delete\">delete_forever</i>"
-        markup= markup.replace("--actions--",action_cons).replace("--electionId--",electionId)
-            .replace("--electionName--",electionName).replace("--description--",description)
-            .replace("--electionId--",electionId)
 
-
-
-
-
-        $('#elections').append(markup)
-        $(".delete").on('click',function (ev) {
-            var rel = $(ev.currentTarget).parent().parent();
-            console.log(rel.attr("id"))
+        var row = $("<tr></tr>")
+        var electionIdE=$("<td>"+electionId+"</td>");
+        var electionNameE=$("<td>"+electionName+"</td>");
+        var electionDescrE=$("<td>"+description+"</td>");
+        var actions = $("<td></td>");
+        var actionDelete = $("<span><i class=\"material-icons cancel\">cancel</i></span>");
+        row.on("click",function () {
+            window.location.href = "/elections/manage?electionId="+electionId;
         })
+        actionDelete.on('click',function () {
+        //    ask are you sure?
+        })
+        actions.append(actionDelete)
+        $([electionIdE,electionNameE,electionDescrE,actions]).each(function () {
+            row.append(this)
+        })
+
+
+
+
+
+
+
+
+        $('#elections').append(row)
+
     }
 
 
