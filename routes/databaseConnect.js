@@ -136,6 +136,16 @@ function checkTokenValidity(token, callback){
         }
     })
 }
+function deleteElection(electionId,ownerID,callback) {
+    var sql = "DELETE FROM elections WHERE electionID = '"+ electionId +"' AND ownerID = '"+ ownerID +"'";
+    connection.query(sql, function (err, result) {
+        if(err){
+            return callback({success:false, response:err})
+        }else {
+            return callback({success:true, response:result})
+        }
+    })
+}
 function getElections(ownerID,callback) {
     var sql = "SELECT * from elections WHERE ownerID = '"+ownerID+"'";
     connection.query(sql, function (err, result) {
@@ -176,10 +186,10 @@ function getElection(ownerID,electionID,callback){
         }
     })
 }
-function createElection(ownerID,name,description,callback) {
-    var sql = "INSERT INTO elections (electionID, name, description,ownerID) VALUES (?)"
+function createElection(ownerID,name,description,accessToken,callback) {
+    var sql = "INSERT INTO elections (electionID, name, description,ownerID,accessToken) VALUES (?)"
     misc.genElectionId(ownerID,function (id) {
-        connection.query(sql,[[id,name,description,ownerID]],function (err,result) {
+        connection.query(sql,[[id,name,description,ownerID,accessToken]],function (err,result) {
             if (err){
 
                 return callback({success:false,response:err});
@@ -197,6 +207,20 @@ function getCandidates(electionID,callback) {
             return callback ({success:false,response:err})
         }else {
             return callback({success:true,response:result})
+        }
+    })
+}
+
+function authDeviceCredentials(electionId, accessToken,callback) {
+    var sql = "SELECT * FROM elections WHERE electionID = '"+electionId+"' AND accessToken = '"+accessToken+"'";
+    connection.query(sql,function (err, result) {
+        if(err) {return callback({success:false, response:err})}
+        else {
+            if(result.length===0){
+                return callback({success:false, response:result})
+            }else {
+                return callback({success:true, response:result})
+            }
         }
     })
 }
@@ -333,5 +357,7 @@ module.exports={
     getCandidates:getCandidates,
     addCandidate:addCandidate,
     addPosition:addPosition,
-    emailCandidate:emailCandidate
+    emailCandidate:emailCandidate,
+    deleteElection:deleteElection,
+    authDeviceCredentials:authDeviceCredentials
 }

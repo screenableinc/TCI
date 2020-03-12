@@ -1,77 +1,55 @@
-<!doctype html>
-<html style="height: 100%" lang="en">
+<html>
+<body>
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" href="/images/favicon.png" type="image/png">
-    <title>Candidate</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="/stylesheets/bootstrap.css">
-
-    <!-- main css -->
-    <link rel="stylesheet" href="/stylesheets/style.css">
-    <link rel="stylesheet" href="/stylesheets/responsive.css">
+    <link href="../assets/css/login.css" rel="stylesheet" />
 </head>
-<body style="height: 100% ; text-align: center"  >
 
-
-<div class="container" style="height: 100%; display: inline-block" >
-<div class="row" style="height: 100%">
-    <div class="col col-lg-6">
-        <div class="card" style="height: 60%">
-
-            <div class="card-body">
-
-            </div>
+<div class="container right-panel-active" id="container">
+    <div class="form-container sign-up-container">
+<!--        style="text-align: center;height: 100%"-->
+        <div class="ovelay-panel" >
+            <img style="height: 40%;width: 40%" src="../images/add_photo.png" alt="">
         </div>
     </div>
-    <div class=" col col-lg-3">
-        <div id="image_container" class="card"  style="height: 60%">
-
-            <div class="card-body">
-                <span  style="text-align: center;display: block"> <img src="/images/add_img.png" alt=""></span>
+<!--    <div class="overlay-container">-->
+<!--        asdasdasda-->
+<!--    </div>-->
+    <div class="overlay-container">
+        <div class="overlay">
+            <div class="overlay-panel overlay-left">
+                <h1>Manifesto!</h1>
+                <p>Grab your potential voters attention by ketting them know your vision</p>
+                <button class="ghost" id="signIn">Sign In</button>
             </div>
+<!--            <div class="overlay-panel overlay-right">-->
+<!--                <h1>Hello, Friend!</h1>-->
+<!--                <p>Enter your personal details and start journey with us</p>-->
+<!--                <button class="" id="signUp">Sign Up</button>-->
+<!--            </div>-->
         </div>
     </div>
 </div>
-</div>
 
+<!--<footer>-->
+<!--    <p>-->
+<!--        Created with <i class="fa fa-heart"></i> by-->
+<!--        <a target="_blank" href="https://florin-pop.com">Florin Pop</a>-->
+<!--        - Read how I created this and how you can join the challenge-->
+<!--        <a target="_blank" href="https://www.florin-pop.com/blog/2019/03/double-slider-sign-in-up-form/">here</a>.-->
+<!--    </p>-->
+<!--</footer>-->
+<script>
+    const signUpButton = document.getElementById('signUp');
+    const signInButton = document.getElementById('signIn');
+    const container = document.getElementById('container');
 
+    signUpButton.addEventListener('click', () => {
+        container.classList.add("right-panel-active");
+    });
 
-
-<!-- Optional JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-
-<script src="/javascripts/jquery-3.2.1.min.js"></script>
-<script src="/javascripts/timezz.js"></script>
-<script type="application/javascript">
-    new TimezZ('.demo', {
-        date: 'Jan 01, 2020 00:00:00',
-        daysName: ':',
-        hoursName: ':',
-        minutesName: ':',
-        secondsName: ':',
-        numberTag: 'span',
-        letterTag: 'i',
-        stop: false, // stop the countdown timer?
+    signInButton.addEventListener('click', () => {
+        container.classList.remove("right-panel-active");
     });
 </script>
-<script src="/javascripts/popper.js"></script>
-<script src="/javascripts/bootstrap.min.js"></script>
-<script src="/javascripts/stellar.js"></script>
-<script src="/vendor/lightbox/simpleLightbox.min.js"></script>
-<script src="/vendor/nice-select/js/jquery.nice-select.min.js"></script>
-<script src="/vendor/isotope/imagesloaded.pkgd.min.js"></script>
-<script src="/vendor/isotope/isotope-min.js"></script>
-<script src="/vendor/owl-carousel/owl.carousel.min.js"></script>
-<script src="/javascripts/jquery.ajaxchimp.min.js"></script>
-<script src="/vendor/counter-up/jquery.waypoints.min.js"></script>
-<script src="/vendor/counter-up/jquery.counterup.min.js"></script>
-<script src="/javascripts/mail-script.js"></script>
-<!--gmaps Js-->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
-<script src="/javascripts/gmaps.min.js"></script>
-<script src="/javascripts/theme.js"></script>
 </body>
 </html>

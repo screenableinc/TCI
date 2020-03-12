@@ -1,5 +1,13 @@
 $(document).ready(function () {
+    function genRandToken(range) {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
 
+        for (var i = 0; i < range; i++)
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+    }
 
     $(".electionRow").click(function (ev) {
         console.log(ev)
@@ -9,14 +17,15 @@ $(document).ready(function () {
     $("#createElection").click(function (ev) {
         var electionName=$("#name").val();
         var electionDescr=$("#description").val();
+        var accessToken = genRandToken(50)
 
         $.ajax({
             type:"POST",
             url:"elections/create",
-            data:{name:electionName,description:electionDescr},
+            data:{name:electionName,description:electionDescr,accessToken:accessToken},
             success:function (res) {
                 if(res.success){
-                    appendRow(res.electionId,electionName,electionDescr)
+                    appendRow(res.electionId,electionName,electionDescr,accessToken)
 
                 }
             },
@@ -38,29 +47,44 @@ $(document).ready(function () {
                         console.log(electionId)
                         var description = res.response[i].description;
                         var electionName = res.response[i].name;
-                        appendRow(electionId,electionName,description)
+                        var accessToken = res.response[i].accessToken;
+                        appendRow(electionId,electionName,description,accessToken)
                     }
                 }
             }
         })
     }
 
-    function appendRow(electionId,electionName,description) {
+    function appendRow(electionId,electionName,description,accessToken) {
 
         var row = $("<tr></tr>")
         var electionIdE=$("<td>"+electionId+"</td>");
         var electionNameE=$("<td>"+electionName+"</td>");
         var electionDescrE=$("<td>"+description+"</td>");
+        var accessToken=$("<td>"+accessToken+"</td>");
         var actions = $("<td></td>");
         var actionDelete = $("<span><i class=\"material-icons cancel\">cancel</i></span>");
         row.on("click",function () {
             window.location.href = "/elections/manage?electionId="+electionId;
         })
         actionDelete.on('click',function () {
-        //    ask are you sure?
+        //    ask are you sure? later
+            $.ajax({
+                url:"/elections/manage/delete",
+                type:"POST",
+                data:{electionId:electionId},
+                success:function(msg){
+                    console.log(msg)
+
+                    if(msg.success){
+                        row.remove()
+                    }
+                }
+
+            })
         })
         actions.append(actionDelete)
-        $([electionIdE,electionNameE,electionDescrE,actions]).each(function () {
+        $([electionIdE,electionNameE,electionDescrE,accessToken,actions]).each(function () {
             row.append(this)
         })
 

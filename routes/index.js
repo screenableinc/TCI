@@ -32,7 +32,7 @@ router.get('/dashboard', function(req, res, next) {
   // res.render('index', { title: 'Express' });
 });
 
-router.get('/manage', function(req, res, next) {
+router.get('/candidate/managecampaign', function(req, res, next) {
   res.render('candidate', { title: '' });
 
 });
@@ -55,7 +55,9 @@ router.post('/register',function (req,res,next) {
 
 
 
-})
+});
+
+
 router.post('/login',function (req,res,next) {
     var password = req.body.password
     var email = req.body.email
@@ -134,9 +136,14 @@ router.get('/elections/manage', function(req, res, next) {
     if (token===undefined){
         res.redirect('/login')
     }else {
+        if (req.query.electionId===undefined){
+            res.redirect('/dashboard')
+            return
+        }
         databaseConnect.getElection(token.email,electionId,function (msg) {
             if (msg.success){
-                var electionName = msg["response"][0].name;
+                var electionName = msg["response"][0].electionName;
+
 
                 res.render('election',{electionName:electionName,electionId:electionId})
 
@@ -150,6 +157,31 @@ router.get('/elections/manage', function(req, res, next) {
     }
 
 });
+router.post('/elections/manage/delete',function(req, res, next){
+    var token = req.signedCookies.userAuth
+    var electionId=req.body.electionId;
+
+    if (token===undefined){
+        res.redirect('/login')
+    }else {
+        databaseConnect.deleteElection(electionId,token.email,function (msg) {
+            res.send(msg)
+        })
+    }
+})
+router.post("/elections/manage/Voterparams/add",function(req, res, next){
+
+})
+router.get("/elections/manage/Voterparams",function (req, res, next) {
+
+});
+router.get("/elections/vote",function(req,res,next){
+    res.render('vote')
+})
+router.get("/elections/manage/Voterparams/delete",function (req, res, next) {
+
+});
+
 router.get('/elections/all', function (req, res, n) {
     var token = req.signedCookies.userAuth
     if (token===undefined){
@@ -187,6 +219,7 @@ router.post('/elections/create', function(req, res, next) {
 
 
     var description = req.body.description;
+    var accessToken = req.body.accessToken;
 
     var token=req.signedCookies.userAuth
     if(token===undefined){
@@ -197,8 +230,8 @@ router.post('/elections/create', function(req, res, next) {
         databaseConnect.checkTokenValidity(token.token,function (msg) {
             if (msg.success){
                 // okay now add election
-                databaseConnect.createElection(token.email,election_name,description,function (response) {
-                    console.log(response)
+                databaseConnect.createElection(token.email,election_name,description,accessToken,function (response) {
+
                     res.send(JSON.stringify(response))
                 })
 
@@ -225,4 +258,35 @@ router.get('/verification', function(req, res, next) {
 
 });
 
-module.exports = router;
+module.exports = function (io) {
+
+    io.on('connection',function (socket) {
+        var electionId = socket.handshake.query.electionId;
+        var accessToken = socket.handshake.query.accessToken;
+        var event = socket.handshake.query.event;
+
+
+        if(event==="connection"){
+            databaseConnect.authDeviceCredentials(electionId, accessToken, function (msg) {
+                if(msg.success){
+                    console.log("success "+electionId+" "+accessToken)
+                    socket.emit("true")
+                    socket.on(accessToken+electionId,function (data) {
+                    //    vote
+
+                        console.log(data)
+                        io.emit(accessToken+electionId,data)
+                    })
+
+                }else {
+                    console.log(msg)
+                    socket.emit("false")
+                }
+            })
+
+        }
+        // socket.emit("connected",{hello:"world"})
+    })
+
+    return router;
+}

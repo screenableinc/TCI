@@ -1,0 +1,130 @@
+<html>
+<body>
+<head>
+    <link href="../assets/css/vote.css" rel="stylesheet" />
+    <link href="../assets/css/login.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+</head>
+
+<div class="limiter">
+    <div class="container-login100 login">
+
+        <div class="wrap-login100">
+            <div class="login100-form-title" style="background-image: url(/images/bg-01.jpg);">
+					<span class="login100-form-title-1">
+
+					</span>
+            </div>
+
+            <div class="login100-form validate-form">
+                <div style="display: inline-block"><h4>Status:</h4> <span>Disconnected</span> </div>
+                <div class="wrap-input100 validate-input m-b-26" data-validate="Email is required">
+                    <span class="label-input100"></span>
+                    <input class="input100" type="email" id="electionId" placeholder="Election ID" required>
+                    <span class="focus-input100"></span>
+                </div>
+
+                <div class="wrap-input100 validate-input m-b-18" data-validate = "Password is required">
+                    <span class="label-input100">Access Token</span>
+                    <input class="input100" type="password" id="accessToken" placeholder="Access Token" required>
+                    <span class="focus-input100"></span>
+                </div>
+
+
+
+
+                <div class="container-login100-form-btn">
+                    <button id="saveSettings" class="login100-form-btn">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row voting" style="display: none">
+        <div class="col-lg-2">
+    <div class="sidenav">
+        <div><h3 id="studentId"></h3></div>
+        <hr>
+        <ul class="selections">
+
+        </ul>
+    </div>
+        </div>
+
+        <div class="col-lg-10">
+    <div class="grid-container">
+        <div class="card grid-item">
+            <div class="card-header">
+                Name
+            </div>
+            <div class="card-body">
+
+            </div>
+        </div>
+        <div class="card grid-item">
+            <div class="card-header">
+
+            </div>
+            <div class="card-body">
+
+            </div>
+        </div>
+    </div>
+        </div>
+</div>
+</div>
+
+<!--<footer>-->
+<!--    <p>-->
+<!--        Created with <i class="fa fa-heart"></i> by-->
+<!--        <a target="_blank" href="https://florin-pop.com">Florin Pop</a>-->
+<!--        - Read how I created this and how you can join the challenge-->
+<!--        <a target="_blank" href="https://www.florin-pop.com/blog/2019/03/double-slider-sign-in-up-form/">here</a>.-->
+<!--    </p>-->
+<!--</footer>-->
+<!--<script>-->
+<!--    const signUpButton = document.getElementById('signUp');-->
+<!--    const signInButton = document.getElementById('signIn');-->
+<!--    const container = document.getElementById('container');-->
+
+<!--    signUpButton.addEventListener('click', () => {-->
+<!--        container.classList.add("right-panel-active");-->
+<!--    });-->
+
+<!--    signInButton.addEventListener('click', () => {-->
+<!--        container.classList.remove("right-panel-active");-->
+<!--    });-->
+<!--</script>-->
+
+<script src="../assets/js/core/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    $("#saveSettings").on('click',function(){
+
+
+        var accessToken= "KqVk0zTu5ScIIL2zqpbEX8yli_rS6CeOfqaHifrFzu6JOFrwFZ";
+        var electionId="wisesibindi@gmail.com_gg4ouqXXSGY7U"
+        var socket = io('http://192.168.10.104:3000/');
+
+        console.log(socket.connected)
+
+        console.log(accessToken+electionId)
+
+
+        socket.on(accessToken+electionId,function (data) {
+        //    start vote
+            console.log(data)
+            $(".voting").css("display","block")
+            $(".login").css("display","none")
+            $("#studentId").text(data)
+
+        })
+
+
+
+    })
+
+</script>
+</body>
+</html>

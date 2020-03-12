@@ -7,11 +7,12 @@ var logger = require('morgan');
 // require('bootstrap')
 
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+
 
 var app = express();
-
+app.io=require('socket.io')();
+var indexRouter = require('./routes/index')(app.io);
+var usersRouter = require('./routes/users');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');

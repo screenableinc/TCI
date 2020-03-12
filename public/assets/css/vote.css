@@ -1,0 +1,31 @@
+html{
+    /*background: url("../city.jpg");*/
+    /*background-repeat: no-repeat;*/
+    /*background-attachment: fixed;*/
+    /*background-position: center;*/
+    /*background-size: cover;*/
+}
+body{
+
+
+}
+.grid-container{
+    display: inline-grid;
+    grid-template-columns: 250px 250px;
+    grid-template-rows:  355px 355px ;
+    grid-column-gap:70px;
+    grid-row-gap:70px;
+    /*justify-items: center;*/
+    align-items: center;
+}
+.sidenav {
+    height: 100%; /* Full-height: remove this if you want "auto" height */
+    width: 260px; /* Set the width of the sidebar */
+    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+    /*z-index: 1; !* Stay on top *!*/
+    top: 0; /* Stay at the top */
+    left: 0;
+    background-color: #e5e5e5; /* Black */
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 20px;
+}
