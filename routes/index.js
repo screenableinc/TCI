@@ -1,7 +1,20 @@
 var express = require('express');
 var router = express.Router();
 var databaseConnect = require('./databaseConnect')
-
+var fs = require('fs');
+var formidable= require('formidable')
+var multer  = require('multer')
+var storage = multer.diskStorage(
+    {
+        destination: './public/',
+        filename: function ( req, file, cb ) {
+            //req.body is empty...
+            //How could I get the new_file_name property sent from client here?
+            cb( null, "sssssss.jpg");
+        }
+    }
+);
+var upload = multer({ storage:storage })
 //TODO::: i dont need do check token validity do i??
 
 /* GET home page. */
@@ -61,18 +74,41 @@ router.post('/register',function (req,res,next) {
 router.post('/login',function (req,res,next) {
     var password = req.body.password
     var email = req.body.email
-    databaseConnect.loginUser(email,password,function (msg) {
+    var userType =  req.body.userType
+    console.log(userType)
+    if(userType==="admin") {
+        databaseConnect.loginUser(email, password, function (msg) {
 
-        if(msg.success===true){
-            res.cookie('userAuth',{token:msg.token,email:email}, { maxAge: 14400000, httpOnly: true ,signed:true})
-            res.redirect('/dashboard')
-        }else{
-            console.log(msg)
-            res.send(msg)
-        }
+            if (msg.success === true) {
+                res.cookie('userAuth', {token: msg.token, email: email}, {
+                    maxAge: 14400000,
+                    httpOnly: true,
+                    signed: true
+                })
+                res.redirect('/dashboard')
+            } else {
+                console.log(msg)
+                res.send(msg)
+            }
 
-    })
+        })
+    }else {
+        //Note email is candidateID and password is accessToken
+        databaseConnect.loginCandidate(email,password,function (msg) {
+            if (msg.success === true) {
+                res.cookie('candidateAuth', {token: msg.token, email: email}, {
+                    maxAge: 14400000,
+                    httpOnly: true,
+                    signed: true
+                })
+                res.redirect('/candidate/managecampaign')
+            } else {
+                console.log(msg)
+                res.send(msg)
+            }
 
+        })
+    }
 
 
 });
@@ -99,6 +135,9 @@ router.get('/candidates', function (req, res, next) {
     databaseConnect.getCandidates(electionId,function (msg) {
         res.send(JSON.stringify(msg))
     })
+})
+router.post('/candidates/imageUpload',upload.single('name'),function(req, res ,next){
+    res.send("done")
 })
 
 router.post('/positions',function (req,res,next) {

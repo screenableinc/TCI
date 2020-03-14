@@ -3,12 +3,14 @@
 <head>
     <link href="../assets/css/login.css" rel="stylesheet" />
 </head>
-
+<form enctype="multipart/form-data" id="upload" runat="server" method="post" action="/candidates/imageUpload">
+<input type="file" hidden id="uploadImage">
+</form>
 <div class="container right-panel-active" id="container">
-    <div class="form-container sign-up-container">
+    <div class="form-container sign-up-container" id="imageSide">
 <!--        style="text-align: center;height: 100%"-->
-        <div class="ovelay-panel" >
-            <img style="height: 40%;width: 40%" src="../images/add_photo.png" alt="">
+        <div class="ovelay-panel" style="height: 100%;width: 100%">
+            <img style="width: inherit" src="../images/add_photo.png" alt="" id="candidateImage">
         </div>
     </div>
 <!--    <div class="overlay-container">-->
@@ -38,18 +40,33 @@
 <!--        <a target="_blank" href="https://www.florin-pop.com/blog/2019/03/double-slider-sign-in-up-form/">here</a>.-->
 <!--    </p>-->
 <!--</footer>-->
+<script src="../assets/js/core/jquery.min.js"></script>
 <script>
     const signUpButton = document.getElementById('signUp');
     const signInButton = document.getElementById('signIn');
     const container = document.getElementById('container');
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
 
-    signUpButton.addEventListener('click', () => {
-        container.classList.add("right-panel-active");
-    });
+            reader.onload = function(e) {
+                $('#candidateImage').attr('src', e.target.result);
+            }
 
-    signInButton.addEventListener('click', () => {
-        container.classList.remove("right-panel-active");
+            reader.readAsDataURL(input.files[0]);
+        //    start upload
+            $("#upload").trigger("submit")
+
+        }
+    }
+
+    $("#uploadImage").change(function() {
+        readURL(this);
     });
+    $("#imageSide").on("click",function () {
+        $("#uploadImage").trigger('click')
+    })
+
 </script>
 </body>
 </html>

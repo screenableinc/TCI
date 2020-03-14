@@ -284,6 +284,36 @@ function loginUser(email, password,callback){
         }
     })
 }
+function loginCandidate(candidateID, accessToken,callback){
+    targetExistsCheck('candidateID', candidateID, 'candidates',function (res) {
+        if (res.success===false){
+            //    user does not exist
+        } else {
+            // user does exist check password
+            targetExistsCheck('accessToken', accessToken, 'candidates', function (res) {
+                if(res.success===false){
+                    //    password false
+                    //     return password failed
+                    return callback({success:false})
+                }else {
+                    // create cookie and redirect
+
+                    misc.genRandToken(12,function (token) {
+                        var sql = "UPDATE candidates SET sessionID = '"+token+"' WHERE candidateID = '"+candidateID+"'";
+                        sqlInsert(sql,function (res) {
+                            if(res.success===true){
+                                return callback({success:true,token:token})
+                            }else{
+                                return callback(res)
+                            }
+                        })
+                    })
+                }
+            })
+
+        }
+    })
+}
 function sqlInsert(sql, callback) {
     connection.query(sql,function (err, result) {
         if(err){
@@ -359,5 +389,6 @@ module.exports={
     addPosition:addPosition,
     emailCandidate:emailCandidate,
     deleteElection:deleteElection,
-    authDeviceCredentials:authDeviceCredentials
+    authDeviceCredentials:authDeviceCredentials,
+    loginCandidate:loginCandidate
 }

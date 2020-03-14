@@ -9,6 +9,12 @@ body{
 
 
 }
+
+.img{
+    height: 100px;
+    width: 100px;
+    border-radius: 100px 100px 100px 100px;
+}
 .grid-container{
     display: inline-grid;
     grid-template-columns: 250px 250px;

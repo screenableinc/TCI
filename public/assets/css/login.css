@@ -42,6 +42,9 @@ a {
     text-decoration: none;
     margin: 15px 0;
 }
+#imageSide:hover{
+    cursor: pointer;
+}
 
 button {
     border-radius: 20px;

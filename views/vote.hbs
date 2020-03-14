@@ -17,7 +17,7 @@
             </div>
 
             <div class="login100-form validate-form">
-                <div style="display: inline-block"><h4>Status:</h4> <span>Disconnected</span> </div>
+                <div style="display: inline-block"><h4>Status:</h4> <span id="status">Disconnected</span> </div>
                 <div class="wrap-input100 validate-input m-b-26" data-validate="Email is required">
                     <span class="label-input100"></span>
                     <input class="input100" type="email" id="electionId" placeholder="Election ID" required>
@@ -44,6 +44,9 @@
     <div class="row voting" style="display: none">
         <div class="col-lg-2">
     <div class="sidenav">
+        <div>
+            <img class="img" src="" alt="" style="margin: 0 auto">
+        </div>
         <div><h3 id="studentId"></h3></div>
         <hr>
         <ul class="selections">
@@ -100,24 +103,46 @@
 <script src="../assets/js/core/jquery.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
+    var positions = [];
+    var queue = [];
+    var initcomplete=false;
+
     $("#saveSettings").on('click',function(){
+
+        //empty all arrays and invalidate
+
+        //retrieve election information
+
 
 
         var accessToken= "KqVk0zTu5ScIIL2zqpbEX8yli_rS6CeOfqaHifrFzu6JOFrwFZ";
         var electionId="wisesibindi@gmail.com_gg4ouqXXSGY7U"
-        var socket = io('http://192.168.10.104:3000/');
+        var socket = io('http://localhost:3000/');
 
-        console.log(socket.connected)
+        socket.on('connect',function (data) {
+            $("#status").text("connected");
+        //    LOAD election details
+        })
+        socket.on('disconnect',function (data) {
+            $("#status").text("disconnected")
+        })
 
-        console.log(accessToken+electionId)
+
+        //called when initial connection is made
+        socket.on(accessToken+electionId+"__init",function (data) {
+
+        })
 
 
-        socket.on(accessToken+electionId,function (data) {
+        socket.on(accessToken+electionId,function (idNumber) {
         //    start vote
-            console.log(data)
+            console.log(idNumber)
+
+            var picURL = "https://sms.unilus.ac.zm/UserImages/"+idNumber+".jpg"
             $(".voting").css("display","block")
             $(".login").css("display","none")
-            $("#studentId").text(data)
+            $("#studentId").text(idNumber)
+            $(".img").attr('src',picURL)
 
         })
 
